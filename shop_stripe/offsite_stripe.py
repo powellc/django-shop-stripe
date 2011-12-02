@@ -41,7 +41,7 @@ class StripeBackend(object):
 
     @on_method(shop_login_required)
     def stripe_payment_view(self, request):
-        if request.user.is_authenticated() && request.user.get_profile().stripe_customer_id:
+        if request.user.is_authenticated() and request.user.get_profile().stripe_customer_id:
             customer_id = request.user.get_profile().stripe_customer_id 
         else:
             card_token = request.POST['stripeToken']
