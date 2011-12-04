@@ -1,1 +1,2 @@
 include README
+recursive-include templates *.html
