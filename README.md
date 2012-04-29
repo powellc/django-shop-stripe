@@ -43,7 +43,7 @@ Here's an example to handle Stripe test input:
     {% block content %}
       <h2>Enter your payment information</h2>
       <br/>
-      form action="" method="POST" id="payment-form">
+      <form action="" method="POST" id="payment-form">
         <p class="form-row">
         <label>Card Number</label>
         <input type="text" size="20" autocomplete="off" class="card-number" value="4242424242424242"/>
