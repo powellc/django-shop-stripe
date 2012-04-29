@@ -10,6 +10,7 @@ from django.http import (HttpResponseBadRequest, HttpResponse,
         HttpResponseRedirect)
 from django.template import RequestContext
 from django.shortcuts import render_to_response
+import stripe
 
 class ConfigError(Exception):
     def __init__(self, value):
@@ -45,6 +46,7 @@ class StripeBackend(object):
             if request.user.is_authenticated() and request.user.get_profile().stripe_customer_id:
                 customer_id = request.user.get_profile().stripe_customer_id 
             else:
+                customer_id=None
                 card_token = request.POST['stripeToken']
             order = self.shop.get_order(request)
             order_id = self.shop.get_order_unique_id(order)
