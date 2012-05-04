@@ -30,7 +30,7 @@ Thanks to Stripe.com's wonderful jscript features, it's painfully simple to inte
 
 The shop_stripe plugin uses all the default django-shop templates, and the most important for our purposes is:
 
-    shop/payment.html
+    shop_stripe/payment.html
 
 Here's an example to handle Stripe test input:
 
