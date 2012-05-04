@@ -10,7 +10,6 @@ from django.http import (HttpResponseBadRequest, HttpResponse,
         HttpResponseRedirect)
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-import stripe
 from shop_stripe.forms import CardForm
 
 class ConfigError(Exception):
