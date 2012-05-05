@@ -37,7 +37,7 @@ Here's an example to handle Stripe test input:
     {% extends "base.html" %}
     
     {% block extra-head %}
-    {% include "shop/_stripe_head.html" %}
+    {% include "_stripe_head.html" %}
     {% endblock %}
     
     {% block content %}
@@ -62,7 +62,7 @@ Here's an example to handle Stripe test input:
       </form>
     {% endblock %}
 
-Note that we include shop/_stripe_head.html, that's the heavy lifting template that just pulls in the Stripe jscript.
+Note that we include _stripe_head.html, that's the heavy lifting template that just pulls in the Stripe jscript.
 
 Conclusion
 -----------
