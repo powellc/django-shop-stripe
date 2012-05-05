@@ -75,9 +75,8 @@ class StripeBackend(object):
                     'customer':customer_id,
                     'description':description,}
             
-            stripe.Charge.create(**stripe_dict)
-
-            self.shop.confirm_payment(self.shop.get_order_for_id(order_id), amount, transaction_id, self.backend_name)
+            stripe_result = stripe.Charge.create(**stripe_dict)
+            self.shop.confirm_payment(self.shop.get_order_for_id(order_id), amount, stripe_result['id'], self.backend_name)
 
             # If we're logged in, save the transaction token for use again later. Sweet.
             if request.user.is_authenticated and request.user.get_profile().stripe_customer_id == None: 
