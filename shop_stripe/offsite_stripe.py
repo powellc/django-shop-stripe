@@ -81,8 +81,9 @@ class StripeBackend(object):
             # If we're logged in, save the transaction token for use again later. Sweet.
             if request.user.is_authenticated and request.user.get_profile().stripe_customer_id == None: 
                 customer = stripe.Customer.create(card=card_token, description=description)
-                request.user.get_profile().stripe_customer_id=customer.id
-                request.user.save()
+                profile = request.user.get_profile()
+                profile.stripe_customer_id = customer.id
+                profile.save()
              
         if hasattr(settings, 'SHOP_STRIPE_PUBLISHABLE_KEY'):
             pub_key=settings.SHOP_STRIPE_PUBLISHABLE_KEY
