@@ -23,7 +23,7 @@ class StripeBackend(object):
     A django-shop payment backend for the stripe service, this 
     is the workhorse view. It processes what the CardForm class
     kicks back to the server.
-
+    
     It also saves the customer billing information for later use.
     '''
     backend_name="Stripe"
@@ -43,7 +43,7 @@ class StripeBackend(object):
 
     def stripe_payment_view(self, request):
         if request.POST:
-            if request.user.is_authenticated() and request.user.get_profile().stripe_customer_id:
+            if request.user.is_authenticated() and not request.user.get_profile().stripe_customer_id == '':
                 customer_id = request.user.get_profile().stripe_customer_id 
             else:
                 customer_id=None
@@ -52,16 +52,18 @@ class StripeBackend(object):
             order_id = self.shop.get_order_unique_id(order)
             amount = self.shop.get_order_total(order)
             amount = str(int(amount * 100))
-            if request.user.is_authenticated(): description = request.user.email
-            else: description = 'guest customer'
-
+            if request.user.is_authenticated():
+                description = request.user.email
+            else:
+                description = 'guest customer'
+            
             currency = getattr(settings, 'SHOP_STRIPE_CURRENCY', 'usd') # Default to good ol' U.S. Dollar
-
+            
             if hasattr(settings, 'SHOP_STRIPE_PRIVATE_KEY'):
                 stripe.api_key=settings.SHOP_STRIPE_PRIVATE_KEY
             else: 
                 raise ConfigError('You must set SHOP_STRIPE_PRIVATE_KEY in your configuration file.')
-
+            
             if not customer_id:
                 stripe_dict = {
                     'amount':amount,
