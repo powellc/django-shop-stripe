@@ -9,7 +9,7 @@ from django.forms.forms import DeclarativeFieldsMetaclass
 from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from shop_stripe.forms import CardForm
+from .forms import CardForm
 import stripe
 
 class ConfigError(Exception):
