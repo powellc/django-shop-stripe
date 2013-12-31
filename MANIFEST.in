@@ -1,2 +1,2 @@
 include README
-recursive-include templates *.html
+recursive-include shop_stripe/templates *
