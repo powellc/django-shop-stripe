@@ -32,34 +32,26 @@ The shop_stripe plugin uses all the default django-shop templates, and the most 
 
     shop_stripe/payment.html
 
-Here's an example to handle Stripe test input:
+Here's an example to handle Stripe test input with a Stripe.js overlay. See the Stripe documentation for details, as well as other methods of integration.
 
     {% extends "base.html" %}
-    
-    {% block extra-head %}
+
+    {% block extra_head %}
     {% include "_stripe_head.html" %}
     {% endblock %}
-    
+
     {% block content %}
-      <h2>Enter your payment information</h2>
-      <br/>
-      <form action="" method="POST" id="payment-form">
-        <p class="form-row">
-        <label>Card Number</label>
-        <input type="text" size="20" autocomplete="off" class="card-number" value="4242424242424242"/>
-        </p>
-        <p class="form-row">
-        <label>CVC</label>
-        <input type="text" size="4" autocomplete="off" class="card-cvc" value="123"/>
-        </p>
-        <p class="form-row">
-        <label>Expiration (MM/YYYY)</label>
-        <input type="text" size="2" class="card-expiry-month" value="12"/>
-        <span> / </span>
-        <input type="text" size="4" class="card-expiry-year" value="2013"/>
-        </p>
-        <button class="btn right submit-button" type="submit">Checkout</button>
-      </form>
+    <form action="" method="POST">
+    {% csrf_token %}
+    <script
+    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+    data-key="YOUR_TEST_PUBLIC_KEY"
+    data-amount="2000"
+    data-name="Demo Site"
+    data-description="2 widgets ($20.00)"
+    data-image="/128x128.png">
+    </script>
+    </form>
     {% endblock %}
 
 Note that we include _stripe_head.html, that's the heavy lifting template that just pulls in the Stripe jscript.
@@ -74,4 +66,4 @@ TODOs
 
 1. Allow user-configurable fields to validate. django-shop-stripe currently doesn't even check the billing address of a user (which is becoming increasingly passe with credit cards anyhow...)
 2. Provide better, functional forms for the library. Do you know how to render id-less form field inputs with Django forms? Stripe requires that you have no IDs on inputs, which means the form data NEVER hits your server and you stay clean with the law.
-
+3. Tests.
