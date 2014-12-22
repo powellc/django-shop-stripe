@@ -3,8 +3,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
 from django.conf.urls import patterns, url
 from django.http import HttpResponseRedirect
-from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from .forms import CardForm
 import stripe
 
@@ -79,9 +78,10 @@ class StripeBackend(object):
             )
 
         form = CardForm
-        context = RequestContext(
-            request, {'form': form, 'STRIPE_PUBLISHABLE_KEY': pub_key})
-        return render_to_response("shop_stripe/payment.html", context)
+        return render(request, "shop_stripe/payment.html", {
+            'form': form,
+            'STRIPE_PUBLISHABLE_KEY': pub_key,
+        })
 
     def stripe_return_successful_view(self, request):
         return HttpResponseRedirect(self.shop.get_finished_url())
