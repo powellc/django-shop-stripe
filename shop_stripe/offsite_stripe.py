@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
 from django.conf.urls import patterns, url
 from django.http import HttpResponseRedirect
@@ -42,6 +43,16 @@ class StripeBackend(object):
 
     def stripe_payment_view(self, request):
         if request.POST:
+            try:
+                stripe.api_key = settings.SHOP_STRIPE_PRIVATE_KEY
+                pub_key = settings.SHOP_STRIPE_PUBLISHABLE_KEY
+            except AttributeError:
+                raise ImproperlyConfigured(
+                    'You must define the SHOP_STRIPE_PRIVATE_KEY'
+                    ' and SHIP_STRIPE_PUBLISHABLE_KEY settings'
+                )
+            currency = getattr(settings, 'SHOP_STRIPE_CURRENCY', 'usd')
+
             card_token = request.POST['stripeToken']
             order = self.shop.get_order(request)
             order_id = self.shop.get_order_unique_id(order)
@@ -52,34 +63,21 @@ class StripeBackend(object):
             else:
                 description = 'guest customer'
 
-            # Default to good ol' U.S. Dollar
-            currency = getattr(settings, 'SHOP_STRIPE_CURRENCY', 'usd')
-
-            if hasattr(settings, 'SHOP_STRIPE_PRIVATE_KEY'):
-                stripe.api_key = settings.SHOP_STRIPE_PRIVATE_KEY
-            else:
-                raise ConfigError(
-                    'You must set SHOP_STRIPE_PRIVATE_KEY '
-                    'in your configuration file.'
-                )
-
             stripe_dict = {
                 'amount': amount,
                 'currency': currency,
                 'card': card_token,
-                'description': description, }
+                'description': description,
+            }
 
             stripe_result = stripe.Charge.create(**stripe_dict)
-            self.shop.confirm_payment(self.shop.get_order_for_id(
-                order_id), amount, stripe_result['id'], self.backend_name)
-
-        if hasattr(settings, 'SHOP_STRIPE_PUBLISHABLE_KEY'):
-            pub_key = settings.SHOP_STRIPE_PUBLISHABLE_KEY
-        else:
-            raise ConfigError(
-                'You must set SHOP_STRIPE_PUBLISHABLE_KEY '
-                'in your configuration file.'
+            self.shop.confirm_payment(
+                self.shop.get_order_for_id(order_id),
+                amount,
+                stripe_result['id'],
+                self.backend_name
             )
+
         form = CardForm
         context = RequestContext(
             request, {'form': form, 'STRIPE_PUBLISHABLE_KEY': pub_key})
