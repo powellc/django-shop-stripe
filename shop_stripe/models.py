@@ -1,2 +1,0 @@
-# Stub of models.py
-
