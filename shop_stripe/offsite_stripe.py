@@ -38,7 +38,7 @@ class StripeBackend(object):
         except AttributeError:
             raise ImproperlyConfigured(
                 'You must define the SHOP_STRIPE_PRIVATE_KEY'
-                ' and SHIP_STRIPE_PUBLISHABLE_KEY settings'
+                ' and SHOP_STRIPE_PUBLISHABLE_KEY settings'
             )
         if request.method == 'POST':
             try:
