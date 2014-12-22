@@ -5,7 +5,7 @@ setup(
     version=__import__('shop_stripe').__version__,
     license="BSD",
 
-    install_requires = ['stripe', ],
+    install_requires=['stripe', ],
 
     description='Let us use stripe for payments with django-shop.',
     long_description=open('README.md').read(),
