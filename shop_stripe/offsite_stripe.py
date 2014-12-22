@@ -44,8 +44,8 @@ class StripeBackend(object):
 
     def stripe_payment_view(self, request):
         if request.POST:
-            if (request.user.is_authenticated() and not
-                    request.user.get_profile().stripe_customer_id == ''):
+            if (request.user.is_authenticated() and
+                    request.user.get_profile().stripe_customer_id):
                 customer_id = request.user.get_profile().stripe_customer_id
             else:
                 customer_id = None
@@ -89,8 +89,8 @@ class StripeBackend(object):
 
             # If we're logged in, save the transaction token for use again
             # later. Sweet.
-            if (request.user.is_authenticated() and
-                    request.user.get_profile().stripe_customer_id == None):
+            if (request.user.is_authenticated() and not
+                    request.user.get_profile().stripe_customer_id):
                 customer = stripe.Customer.create(
                     card=card_token, description=description)
                 profile = request.user.get_profile()
