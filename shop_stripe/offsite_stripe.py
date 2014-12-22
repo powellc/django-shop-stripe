@@ -2,19 +2,10 @@
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
 from django.conf.urls import patterns, url
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from .forms import CardForm
 import stripe
-
-
-class ConfigError(Exception):
-
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return repr(self.value)
 
 
 class StripeBackend(object):
@@ -49,10 +40,12 @@ class StripeBackend(object):
                 'You must define the SHOP_STRIPE_PRIVATE_KEY'
                 ' and SHIP_STRIPE_PUBLISHABLE_KEY settings'
             )
-        if request.POST:
+        if request.method == 'POST':
+            try:
+                card_token = request.POST['stripeToken']
+            except KeyError:
+                return HttpResponseBadRequest('stripeToken not set')
             currency = getattr(settings, 'SHOP_STRIPE_CURRENCY', 'usd')
-
-            card_token = request.POST['stripeToken']
             order = self.shop.get_order(request)
             order_id = self.shop.get_order_unique_id(order)
             amount = self.shop.get_order_total(order)
@@ -61,14 +54,12 @@ class StripeBackend(object):
                 description = request.user.email
             else:
                 description = 'guest customer'
-
             stripe_dict = {
                 'amount': amount,
                 'currency': currency,
                 'card': card_token,
                 'description': description,
             }
-
             stripe_result = stripe.Charge.create(**stripe_dict)
             self.shop.confirm_payment(
                 self.shop.get_order_for_id(order_id),
@@ -76,8 +67,9 @@ class StripeBackend(object):
                 stripe_result['id'],
                 self.backend_name
             )
-
-        form = CardForm
+            form = CardForm(request.POST)
+        else:
+            form = CardForm()
         return render(request, "shop_stripe/payment.html", {
             'form': form,
             'STRIPE_PUBLISHABLE_KEY': pub_key,
