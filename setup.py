@@ -8,7 +8,7 @@ setup(
     install_requires = ['stripe', ],
 
     description='Let us use stripe for payments with django-shop.',
-    long_description=open('README').read(),
+    long_description=open('README.md').read(),
 
     author='Colin Powell',
     author_email='colin@onecardinal.com',
