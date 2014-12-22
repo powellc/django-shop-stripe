@@ -41,15 +41,15 @@ class StripeBackend(object):
         return urlpatterns
 
     def stripe_payment_view(self, request):
+        try:
+            stripe.api_key = settings.SHOP_STRIPE_PRIVATE_KEY
+            pub_key = settings.SHOP_STRIPE_PUBLISHABLE_KEY
+        except AttributeError:
+            raise ImproperlyConfigured(
+                'You must define the SHOP_STRIPE_PRIVATE_KEY'
+                ' and SHIP_STRIPE_PUBLISHABLE_KEY settings'
+            )
         if request.POST:
-            try:
-                stripe.api_key = settings.SHOP_STRIPE_PRIVATE_KEY
-                pub_key = settings.SHOP_STRIPE_PUBLISHABLE_KEY
-            except AttributeError:
-                raise ImproperlyConfigured(
-                    'You must define the SHOP_STRIPE_PRIVATE_KEY'
-                    ' and SHIP_STRIPE_PUBLISHABLE_KEY settings'
-                )
             currency = getattr(settings, 'SHOP_STRIPE_CURRENCY', 'usd')
 
             card_token = request.POST['stripeToken']
