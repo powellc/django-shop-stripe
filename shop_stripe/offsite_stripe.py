@@ -3,7 +3,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
 from django.conf.urls import patterns, url
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .forms import CardForm
 import stripe
 
@@ -41,6 +41,8 @@ class StripeBackend(object):
                 ' and SHOP_STRIPE_PUBLISHABLE_KEY settings'
             )
         if request.method == 'POST':
+            form = CardForm(request.POST)
+            error = None
             try:
                 card_token = request.POST['stripeToken']
             except KeyError:
@@ -60,18 +62,23 @@ class StripeBackend(object):
                 'card': card_token,
                 'description': description,
             }
-            stripe_result = stripe.Charge.create(**stripe_dict)
-            self.shop.confirm_payment(
-                self.shop.get_order_for_id(order_id),
-                amount,
-                stripe_result['id'],
-                self.backend_name
-            )
-            form = CardForm(request.POST)
+            try:
+                stripe_result = stripe.Charge.create(**stripe_dict)
+            except stripe.CardError as e:
+                error = e
+            else:
+                self.shop.confirm_payment(
+                    self.shop.get_order_for_id(order_id),
+                    amount,
+                    stripe_result['id'],
+                    self.backend_name
+                )
+                return redirect(self.shop.get_finished_url())
         else:
             form = CardForm()
         return render(request, "shop_stripe/payment.html", {
             'form': form,
+            'error': error,
             'STRIPE_PUBLISHABLE_KEY': pub_key,
         })
 
