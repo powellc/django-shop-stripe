@@ -1,14 +1,14 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name='django-shop-stripe',
     version=__import__('shop_stripe').__version__,
     license="BSD",
 
-    install_requires = ['stripe', ],
+    install_requires=['stripe', ],
 
     description='Let us use stripe for payments with django-shop.',
-    long_description=open('README').read(),
+    long_description=open('README.md').read(),
 
     author='Colin Powell',
     author_email='colin@onecardinal.com',
