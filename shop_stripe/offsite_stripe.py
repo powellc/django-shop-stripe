@@ -40,9 +40,9 @@ class StripeBackend(object):
                 'You must define the SHOP_STRIPE_PRIVATE_KEY'
                 ' and SHOP_STRIPE_PUBLISHABLE_KEY settings'
             )
+        error = None
         if request.method == 'POST':
             form = CardForm(request.POST)
-            error = None
             try:
                 card_token = request.POST['stripeToken']
             except KeyError:
