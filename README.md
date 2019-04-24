@@ -1,4 +1,4 @@
-Django Shop Stripe plugin
+Django Shop Stripe plugin  DEPRECATED
 ============================
 
 A plugin to use stripe with django-shop.
